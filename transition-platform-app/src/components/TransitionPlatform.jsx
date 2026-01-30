@@ -834,11 +834,21 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
               if (currentQuestion < currentQuestions.length - 1) {
                 setCurrentQuestion(currentQuestion + 1);
               } else {
-                // Calculate score
+                // Check if all questions are answered
+                const allAnswered = currentQuestions.every((_, idx) => answers[idx] !== undefined);
+                if (!allAnswered) {
+                  alert('Please answer all questions before completing the assessment.');
+                  return;
+                }
+                
+                // Calculate score based on correct answers
                 const correctAnswers = Object.keys(answers).filter(
                   key => answers[key] === currentQuestions[parseInt(key)].correct
                 ).length;
                 const score = Math.round((correctAnswers / currentQuestions.length) * 100);
+                
+                // Award XP based on performance: 50-200 XP based on score
+                const xpEarned = Math.round(50 + (score / 100) * 150);
                 
                 setUserProgress(prev => ({
                   ...prev,
@@ -846,8 +856,12 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
                     ...prev.assessmentScores,
                     [activeAssessment.id]: score
                   },
-                  totalXP: prev.totalXP + 200
+                  totalXP: prev.totalXP + xpEarned
                 }));
+                
+                // Show results alert
+                alert(`Assessment Complete!\n\nScore: ${score}%\nCorrect: ${correctAnswers}/${currentQuestions.length}\nXP Earned: +${xpEarned}`);
+                
                 setActiveAssessment(null);
                 setCurrentQuestion(0);
                 setAnswers({});
@@ -1261,53 +1275,62 @@ const InterviewView = ({ selectedRole }) => {
           </p>
         </div>
 
-        {/* Score Card */}
+        {/* Info Card */}
         <div style={{
           background: 'linear-gradient(135deg, rgba(0, 212, 170, 0.15) 0%, rgba(123, 104, 238, 0.1) 100%)',
           borderRadius: '20px',
           padding: '24px',
-          border: '1px solid rgba(0, 212, 170, 0.2)'
+          border: '1px solid rgba(0, 212, 170, 0.2)',
+          textAlign: 'center'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
-            <div>
-              <div style={{ fontSize: '32px', fontWeight: '700', color: '#00D4AA' }}>3.2</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>Likely Score</div>
-            </div>
-            <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
-            <div>
-              <div style={{ fontSize: '32px', fontWeight: '700', color: '#7B68EE' }}>85%</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>Alignment</div>
-            </div>
-            <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }} />
-            <div>
-              <div style={{ fontSize: '32px', fontWeight: '700', color: '#FF6B35' }}>+150</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>XP Earned</div>
-            </div>
+          <div style={{ fontSize: '15px', lineHeight: '1.7', color: 'rgba(255,255,255,0.8)' }}>
+            <strong>Note:</strong> This is practice mode. Scores are not evaluated.
+            <br />
+            Use real interviews and assessments to track your progress and earn XP.
           </div>
         </div>
 
-        {/* Feedback Items */}
+        {/* Practice Tips */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <FeedbackItem 
-            type="strength"
-            title="Strong data-driven approach"
-            description="Great use of specific metrics and outcomes in your responses"
-          />
-          <FeedbackItem 
-            type="strength"
-            title="Clear STAR structure"
-            description="Your answers followed a logical progression that's easy to follow"
-          />
-          <FeedbackItem 
-            type="improve"
-            title="Connect to Capital One values"
-            description="Reference 'Customer Back' or 'Data Obsession' more explicitly"
-          />
-          <FeedbackItem 
-            type="improve"
-            title="Quantify results more"
-            description="Add specific percentages, dollar amounts, or timeframes"
-          />
+          <div style={{
+            background: 'rgba(0, 212, 170, 0.1)',
+            borderRadius: '12px',
+            padding: '16px',
+            border: '1px solid rgba(0, 212, 170, 0.2)'
+          }}>
+            <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#00D4AA' }}>
+              ✓ Remember the STAR Method
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.6' }}>
+              Situation → Task → Action → Result. Include specific metrics and timeframes.
+            </div>
+          </div>
+          <div style={{
+            background: 'rgba(123, 104, 238, 0.1)',
+            borderRadius: '12px',
+            padding: '16px',
+            border: '1px solid rgba(123, 104, 238, 0.2)'
+          }}>
+            <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#7B68EE' }}>
+              ✓ Connect to Capital One Values
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.6' }}>
+              Reference Customer Back, Data Obsession, or D4 Framework in your answers.
+            </div>
+          </div>
+          <div style={{
+            background: 'rgba(255, 215, 0, 0.1)',
+            borderRadius: '12px',
+            padding: '16px',
+            border: '1px solid rgba(255, 215, 0, 0.2)'
+          }}>
+            <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#FFD700' }}>
+              ✓ Use Specific Examples
+            </div>
+            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.7)', lineHeight: '1.6' }}>
+              Real projects with numbers: "Reduced fraud by 15%" not "improved security".
+            </div>
+          </div>
         </div>
 
         <button
