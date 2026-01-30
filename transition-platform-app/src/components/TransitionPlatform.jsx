@@ -479,34 +479,41 @@ const LearnView = ({ selectedRole, userProgress, setUserProgress }) => {
   const categories = [
     { id: 'methodology', name: 'Methodology', icon: Compass },
     { id: 'culture', name: 'Culture', icon: Users },
-    { id: 'domain', name: 'Payments', icon: Zap },
-    { id: 'tools', name: 'Tools', icon: Settings }
+    { id: 'domain', name: 'Payments', icon: Zap }
   ];
 
+  // Map imported data to module format
   const modules = {
-    methodology: [
-      { id: 'm1', title: 'COFEE Framework Deep Dive', duration: '25 min', completed: true, xp: 100 },
-      { id: 'm2', title: 'Agile 2.0 Ceremonies', duration: '20 min', completed: true, xp: 80 },
-      { id: 'm3', title: 'User Story Excellence', duration: '30 min', completed: false, xp: 120, locked: false },
-      { id: 'm4', title: 'Data-Driven Requirements', duration: '25 min', completed: false, xp: 100, locked: true }
-    ],
-    culture: [
-      { id: 'c1', title: 'D4 Decision Framework', duration: '15 min', completed: true, xp: 60 },
-      { id: 'c2', title: 'Customer Back Thinking', duration: '20 min', completed: false, xp: 80, locked: false },
-      { id: 'c3', title: 'Data Obsession Mindset', duration: '25 min', completed: false, xp: 100, locked: true },
-      { id: 'c4', title: 'Smart Risk Navigation', duration: '20 min', completed: false, xp: 80, locked: true }
-    ],
-    domain: [
-      { id: 'd1', title: 'Card Network Fundamentals', duration: '30 min', completed: true, xp: 120 },
-      { id: 'd2', title: 'Real-Time Payments & FedNow', duration: '25 min', completed: false, xp: 100, locked: false },
-      { id: 'd3', title: 'Fraud Operations ML Stack', duration: '35 min', completed: false, xp: 140, locked: true },
-      { id: 'd4', title: 'Global Money Movement', duration: '30 min', completed: false, xp: 120, locked: true }
-    ],
-    tools: [
-      { id: 't1', title: 'AWS-Native Architecture', duration: '40 min', completed: false, xp: 160, locked: false },
-      { id: 't2', title: 'Inner-Source Development', duration: '25 min', completed: false, xp: 100, locked: true },
-      { id: 't3', title: '3 Lines of Defense', duration: '20 min', completed: false, xp: 80, locked: true }
-    ]
+    methodology: METHODOLOGY_MODULES.map((m, idx) => ({
+      id: m.id,
+      title: m.title,
+      duration: m.duration,
+      xp: m.xp,
+      completed: userProgress.completedModules.includes(m.id),
+      locked: idx > 0 && !userProgress.completedModules.includes(METHODOLOGY_MODULES[idx-1].id),
+      content: m.content,
+      exercise: m.exercise
+    })),
+    culture: CULTURE_MODULES.map((m, idx) => ({
+      id: m.id,
+      title: m.title,
+      duration: m.duration,
+      xp: m.xp,
+      completed: userProgress.completedModules.includes(m.id),
+      locked: idx > 0 && !userProgress.completedModules.includes(CULTURE_MODULES[idx-1].id),
+      content: m.content,
+      exercise: m.exercise
+    })),
+    domain: PAYMENT_DOMAIN_MODULES.map((m, idx) => ({
+      id: m.id,
+      title: m.title,
+      duration: m.duration,
+      xp: m.xp,
+      completed: userProgress.completedModules.includes(m.id),
+      locked: idx > 0 && !userProgress.completedModules.includes(PAYMENT_DOMAIN_MODULES[idx-1].id),
+      content: m.content,
+      exercise: m.exercise
+    }))
   };
 
   const completeModule = (moduleId) => {
@@ -624,7 +631,7 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
       id: 'skills-gap',
       title: 'Skills Gap Analysis',
       description: 'Identify areas for growth based on Capital One competencies',
-      questions: 15,
+      questions: ASSESSMENT_QUESTIONS['skills-gap']?.length || 15,
       duration: '20 min',
       icon: BarChart3,
       color: '#00D4AA',
@@ -634,7 +641,7 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
       id: 'cultural-fit',
       title: 'Cultural Alignment',
       description: 'Assess your alignment with Capital One values',
-      questions: 12,
+      questions: ASSESSMENT_QUESTIONS['cultural-fit']?.length || 12,
       duration: '15 min',
       icon: Users,
       color: '#7B68EE',
@@ -644,7 +651,7 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
       id: 'domain-knowledge',
       title: 'Payment Domain Quiz',
       description: 'Test your knowledge of payment systems and networks',
-      questions: 20,
+      questions: ASSESSMENT_QUESTIONS['domain-knowledge']?.length || 20,
       duration: '25 min',
       icon: Zap,
       color: '#FF6B35',
@@ -654,7 +661,7 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
       id: 'methodology',
       title: 'COFEE Methodology',
       description: 'Verify understanding of Capital One frameworks',
-      questions: 10,
+      questions: ASSESSMENT_QUESTIONS['methodology']?.length || 10,
       duration: '12 min',
       icon: Compass,
       color: '#00A080',
@@ -662,38 +669,13 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
     }
   ];
 
-  const sampleQuestions = [
-    {
-      question: "When facing a decision with incomplete data, Capital One's D4 framework suggests you should:",
-      options: [
-        "Wait until all data is available",
-        "Discuss, Debate, Decide, then Do",
-        "Escalate to leadership immediately",
-        "Follow the previous decision pattern"
-      ],
-      correct: 1
-    },
-    {
-      question: "The 'Customer Back' principle at Capital One means:",
-      options: [
-        "Always prioritize customer service tickets",
-        "Start with customer outcomes and work backwards",
-        "Put customers behind internal priorities",
-        "Focus on customer acquisition only"
-      ],
-      correct: 1
-    },
-    {
-      question: "Capital One's approach to 'Smart Risk' differs from traditional banking by:",
-      options: [
-        "Avoiding all risks entirely",
-        "Taking calculated risks backed by data",
-        "Ignoring regulatory requirements",
-        "Following industry standard practices only"
-      ],
-      correct: 1
-    }
-  ];
+  // Get questions for active assessment
+  const getQuestions = () => {
+    if (!activeAssessment) return [];
+    return ASSESSMENT_QUESTIONS[activeAssessment.id] || [];
+  };
+
+  const currentQuestions = getQuestions();
 
   if (activeAssessment) {
     return (
@@ -718,7 +700,7 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
               {activeAssessment.title}
             </h2>
             <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>
-              Question {currentQuestion + 1} of {sampleQuestions.length}
+              Question {currentQuestion + 1} of {currentQuestions.length}
             </div>
           </div>
         </div>
@@ -732,13 +714,14 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
         }}>
           <div style={{
             height: '100%',
-            width: `${((currentQuestion + 1) / sampleQuestions.length) * 100}%`,
+            width: `${((currentQuestion + 1) / currentQuestions.length) * 100}%`,
             background: activeAssessment.color,
             transition: 'width 0.3s ease'
           }} />
         </div>
 
         {/* Question Card */}
+        {currentQuestions[currentQuestion] && (
         <div style={{
           background: 'rgba(255,255,255,0.03)',
           borderRadius: '20px',
@@ -751,11 +734,11 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
             lineHeight: '1.5',
             marginBottom: '24px'
           }}>
-            {sampleQuestions[currentQuestion].question}
+            {currentQuestions[currentQuestion].question}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {sampleQuestions[currentQuestion].options.map((option, idx) => (
+            {currentQuestions[currentQuestion].options.map((option, idx) => (
               <button
                 key={idx}
                 onClick={() => setAnswers({ ...answers, [currentQuestion]: idx })}
@@ -796,7 +779,35 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
               </button>
             ))}
           </div>
+
+          {/* Explanation after answer selected */}
+          {answers[currentQuestion] !== undefined && currentQuestions[currentQuestion].explanation && (
+            <div style={{
+              marginTop: '20px',
+              padding: '16px',
+              borderRadius: '12px',
+              background: answers[currentQuestion] === currentQuestions[currentQuestion].correct 
+                ? 'rgba(0, 212, 170, 0.1)' 
+                : 'rgba(255, 107, 53, 0.1)',
+              border: `1px solid ${answers[currentQuestion] === currentQuestions[currentQuestion].correct 
+                ? 'rgba(0, 212, 170, 0.3)' 
+                : 'rgba(255, 107, 53, 0.3)'}`
+            }}>
+              <div style={{ 
+                fontSize: '13px', 
+                fontWeight: '600', 
+                marginBottom: '8px',
+                color: answers[currentQuestion] === currentQuestions[currentQuestion].correct ? '#00D4AA' : '#FF6B35'
+              }}>
+                {answers[currentQuestion] === currentQuestions[currentQuestion].correct ? '✓ Correct!' : '✗ Not quite'}
+              </div>
+              <div style={{ fontSize: '14px', lineHeight: '1.6', color: 'rgba(255,255,255,0.8)' }}>
+                {currentQuestions[currentQuestion].explanation}
+              </div>
+            </div>
+          )}
         </div>
+        )}
 
         {/* Navigation */}
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -820,15 +831,20 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
           )}
           <button
             onClick={() => {
-              if (currentQuestion < sampleQuestions.length - 1) {
+              if (currentQuestion < currentQuestions.length - 1) {
                 setCurrentQuestion(currentQuestion + 1);
               } else {
-                // Complete assessment
+                // Calculate score
+                const correctAnswers = Object.keys(answers).filter(
+                  key => answers[key] === currentQuestions[parseInt(key)].correct
+                ).length;
+                const score = Math.round((correctAnswers / currentQuestions.length) * 100);
+                
                 setUserProgress(prev => ({
                   ...prev,
                   assessmentScores: {
                     ...prev.assessmentScores,
-                    [activeAssessment.id]: 85
+                    [activeAssessment.id]: score
                   },
                   totalXP: prev.totalXP + 200
                 }));
@@ -849,11 +865,10 @@ const AssessView = ({ selectedRole, userProgress, setUserProgress }) => {
               color: '#fff',
               fontSize: '15px',
               fontWeight: '600',
-              cursor: answers[currentQuestion] !== undefined ? 'pointer' : 'not-allowed',
-              opacity: answers[currentQuestion] !== undefined ? 1 : 0.5
+              cursor: answers[currentQuestion] !== undefined ? 'pointer' : 'not-allowed'
             }}
           >
-            {currentQuestion < sampleQuestions.length - 1 ? 'Next Question' : 'Complete Assessment'}
+            {currentQuestion < currentQuestions.length - 1 ? 'Next Question' : 'Complete Assessment'}
           </button>
         </div>
       </div>
@@ -980,39 +995,40 @@ const InterviewView = ({ selectedRole }) => {
   const [selectedType, setSelectedType] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [currentQ, setCurrentQ] = useState(0);
 
   const interviewTypes = [
     { 
       id: 'behavioral',
-      title: 'Behavioral Round',
-      description: 'Practice STAR method responses using Capital One Leadership Principles',
+      title: INTERVIEW_CONTENT.behavioral.title,
+      description: INTERVIEW_CONTENT.behavioral.description,
       icon: MessageSquare,
       color: '#00D4AA',
-      questions: ['Tell me about a time you used data to drive a decision', 'Describe a situation where you had to challenge the status quo', 'Give an example of when you delivered results under pressure']
+      questions: INTERVIEW_CONTENT.behavioral.questions
     },
     {
-      id: 'case',
-      title: 'Case Study',
-      description: 'Work through payment product problems',
+      id: 'caseStudy',
+      title: INTERVIEW_CONTENT.caseStudy.title,
+      description: INTERVIEW_CONTENT.caseStudy.description,
       icon: Lightbulb,
       color: '#7B68EE',
-      questions: ['Reduce debit card fraud by 15% while maintaining customer experience', 'Design a strategy to increase contactless payment adoption', 'Analyze the impact of FedNow on our payment processing costs']
+      questions: INTERVIEW_CONTENT.caseStudy.questions
     },
     {
       id: 'technical',
-      title: 'Technical Deep Dive',
-      description: 'Discuss payment networks, ISO8583, and system architecture',
+      title: INTERVIEW_CONTENT.technical.title,
+      description: INTERVIEW_CONTENT.technical.description,
       icon: Zap,
       color: '#FF6B35',
-      questions: ['Walk me through a card authorization flow', 'Explain how you would optimize interchange costs', 'Describe your approach to fraud detection at scale']
+      questions: INTERVIEW_CONTENT.technical.questions
     },
     {
-      id: 'culture',
-      title: 'Culture Fit',
-      description: 'Demonstrate alignment with "Do the Right Thing"',
+      id: 'cultureFit',
+      title: INTERVIEW_CONTENT.cultureFit.title,
+      description: INTERVIEW_CONTENT.cultureFit.description,
       icon: Users,
       color: '#00A080',
-      questions: ['How do you embody "Customer Back" thinking?', 'Tell me about your approach to "Smart Risk"', 'How do you handle disagreements with leadership?']
+      questions: INTERVIEW_CONTENT.cultureFit.questions
     }
   ];
 
@@ -1026,13 +1042,12 @@ const InterviewView = ({ selectedRole }) => {
 
   if (mode === 'practice' && selectedType) {
     const interview = interviewTypes.find(t => t.id === selectedType);
-    const [currentQ, setCurrentQ] = useState(0);
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button
-            onClick={() => { setMode('select'); setIsRecording(false); setTimer(0); }}
+            onClick={() => { setMode('select'); setIsRecording(false); setTimer(0); setCurrentQ(0); }}
             style={{
               background: 'rgba(255,255,255,0.05)',
               border: 'none',
@@ -1059,9 +1074,34 @@ const InterviewView = ({ selectedRole }) => {
           padding: '28px',
           border: `1px solid ${interview.color}30`
         }}>
-          <div style={{ fontSize: '20px', fontWeight: '500', lineHeight: '1.5' }}>
-            {interview.questions[currentQ]}
+          <div style={{ fontSize: '20px', fontWeight: '500', lineHeight: '1.5', marginBottom: '16px' }}>
+            {interview.questions[currentQ].question || interview.questions[currentQ].scenario}
           </div>
+          {interview.questions[currentQ].principle && (
+            <div style={{
+              display: 'inline-block',
+              padding: '6px 12px',
+              background: `${interview.color}20`,
+              borderRadius: '8px',
+              fontSize: '12px',
+              fontWeight: '600',
+              color: interview.color
+            }}>
+              Focus: {interview.questions[currentQ].principle}
+            </div>
+          )}
+          {interview.questions[currentQ].structure && (
+            <div style={{ marginTop: '20px' }}>
+              <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: 'rgba(255,255,255,0.7)' }}>
+                Approach:
+              </div>
+              <ul style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.8', paddingLeft: '20px' }}>
+                {interview.questions[currentQ].structure.map((step, idx) => (
+                  <li key={idx}>{step}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         {/* Recording Interface */}
@@ -1562,36 +1602,13 @@ const ProfileView = ({ userProgress, selectedRole, roles }) => {
 const CultureView = ({ userProgress, setUserProgress }) => {
   const [activeLesson, setActiveLesson] = useState(0);
 
-  const lessons = [
-    {
-      title: "D4 Decision Framework",
-      content: "Capital One uses D4: Discuss, Debate, Decide, Do. Unlike traditional hierarchical decisions, D4 encourages open debate before commitment.",
-      exercise: "Think of a recent decision at Discover. How would you apply D4?",
-      tip: "Say: 'Let's data-drive this decision' and 'What's the customer back perspective?'",
-      avoid: "Avoid: 'At Discover, we always...' or 'That's not how we did it before'"
-    },
-    {
-      title: "Customer Back Thinking",
-      content: "Start with the customer outcome and work backwards. Every feature, process, and decision should trace back to customer value.",
-      exercise: "Identify a current project. What's the ultimate customer benefit?",
-      tip: "Say: 'What problem does this solve for our customer?' and 'How does this improve their experience?'",
-      avoid: "Avoid: Building features because competitors have them"
-    },
-    {
-      title: "Data Obsession",
-      content: "Capital One's 'Money Culture' is built on data-driven decisions. Intuition supports but never replaces data.",
-      exercise: "What metrics would you use to measure success in your role?",
-      tip: "Say: 'What does the data tell us?' and 'Can we run an experiment?'",
-      avoid: "Avoid: 'I think...' without supporting data"
-    },
-    {
-      title: "Smart Risk",
-      content: "Unlike traditional financial services conservatism, Capital One takes calculated risks backed by data and quick iteration.",
-      exercise: "What's a 'smart risk' you would take in your first 90 days?",
-      tip: "Say: 'What's the MVP for learning?' and 'How can we test this quickly?'",
-      avoid: "Avoid: 'Let's build a comprehensive solution first' or 'We need approval from everyone'"
-    }
-  ];
+  const lessons = CULTURE_MODULES.map(module => ({
+    title: module.title,
+    content: module.content.overview || 'Learn about Capital One culture',
+    exercise: module.exercise?.title || 'Reflect on how this applies to your role',
+    tip: 'Practice these principles in your daily work',
+    avoid: 'Avoid falling back on old patterns without considering the new approach'
+  }));
 
   const currentLesson = lessons[activeLesson];
 
@@ -1764,20 +1781,7 @@ const CultureView = ({ userProgress, setUserProgress }) => {
 const GlossaryView = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const terms = [
-    { term: 'COFEE', definition: "Capital One's proprietary Agile methodology framework that emphasizes customer outcomes and data-driven development." },
-    { term: 'Money Culture', definition: "Capital One's data-driven, customer-centric business philosophy that permeates all decisions." },
-    { term: 'D4 Framework', definition: 'Discuss, Debate, Decide, Do - Capital One\'s collaborative decision-making model.' },
-    { term: 'Two-In-A-Box', definition: "Capital One's dual leadership model pairing business and risk perspectives." },
-    { term: 'Foundry Sprints', definition: "Capital One's 12-week innovation cycles for rapid experimentation and learning." },
-    { term: 'Inner-Source', definition: "Capital One's internal open-source development model promoting code sharing across teams." },
-    { term: '3 Lines of Defense', definition: "Capital One's risk management framework: business ownership, risk management, internal audit." },
-    { term: 'Customer Back', definition: 'Starting with customer outcomes and working backwards to determine solutions.' },
-    { term: 'Smart Risk', definition: 'Taking calculated risks backed by data analysis and quick iteration cycles.' },
-    { term: 'Data Obsession', definition: 'The principle that all decisions should be informed by data, not just intuition.' }
-  ];
-
-  const filteredTerms = terms.filter(t => 
+  const filteredTerms = GLOSSARY_TERMS.filter(t => 
     t.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
     t.definition.toLowerCase().includes(searchTerm.toLowerCase())
   );
